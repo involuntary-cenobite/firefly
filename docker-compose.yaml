@@ -1,0 +1,65 @@
+version: "3.8"
+services:
+  proxy_manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./npm-data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy_net
+# Default Login Email:    admin@example.com
+# Default Login Password: changeme
+
+###
+
+  fireflyiii:
+    image: fireflyiii/core:latest
+    hostname: firefly
+    container_name: firefly_iii
+    restart: always
+    volumes:
+      - ./firefly_upload:/var/www/html/storage/upload
+    env_file: .env
+    networks:
+      - proxy_net
+      - firefly_iii
+    expose:
+      - 8080
+    depends_on:
+      - db
+###
+
+  db:
+    image: mariadb:lts
+    hostname: db
+    container_name: firefly_iii_db
+    restart: always
+    env_file: .db.env
+    networks:
+      - firefly_iii
+    volumes:
+      - ./firefly_db:/var/lib/mysql
+#  cron:
+    #
+    # To make this work, set STATIC_CRON_TOKEN in your .env file or as an environment variable and replace REPLACEME below
+    # The STATIC_CRON_TOKEN must be *exactly* 32 characters long
+    #
+#    image: alpine
+#    restart: always
+#    container_name: firefly_iii_cron
+#    command: sh -c "echo \"0 3 * * * wget -qO- http://app:8080/api/v1/cron/REPLACEME\" | crontab - && crond -f -L /dev/stdout"
+#    networks:
+#      - firefly_iii
+
+###
+
+networks:
+  firefly_iii:
+    driver: bridge
+  proxy_net:
+    external: true

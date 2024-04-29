@@ -1,0 +1,12 @@
+services:
+  fireflyiii-backup:
+    container_name: fireflyiii-backup
+    image: alpine
+    volumes:
+      - ./fireflyiii-bkup:/backup
+      - ../fireflyiii/db:/tmp
+    entrypoint:
+      - 'tar'
+      - '-czvf'
+      - '/backup/db.tar'
+      - '/tmp'

@@ -1,0 +1,5 @@
+# ignore built files
+firefly_db/
+firefly_upload/  
+letsencrypt/  
+npm-data/

@@ -1,0 +1,73 @@
+TO DO:
+
+- set cron container
+
+
+
+
+
+
+
+set firewall exemtion gcp with command center
+
+---Configure project firewall---
+allow 80 project:
+gcloud compute firewall-rules create allow_80 --allow tcp:80 --source-tags=<list-of-your-instances-names> --source-ranges=0.0.0.0/0 --description="allow Nginx Proxy Manager http - reverse proxy"
+
+allow 443 project(optional):
+gcloud compute firewall-rules create allow_443 --allow tcp:443 --source-tags=<list-of-your-instances-names> --source-ranges=0.0.0.0/0 --description="allow Nginx Proxy Manager https - reverse proxy"
+
+allow 81 in the project for NPM:
+gcloud compute firewall-rules create allow_NPM_admin --allow tcp:81 --source-tags=<list-of-your-instances-names> --source-ranges=0.0.0.0/0 --description="allow Nginx Proxy Manager administration access"
+
+allow http(80), and optinally https(443), in vm:
+gcloud compute instances add-tags [YOUR_INSTANCE_NAME] --tags http-server,https-server
+
+---Install docker---
+sudo apt update && sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update
+sudo apt install docker-ce -y
+
+add user to docker group:
+sudo usermod -aG docker ${USER}
+
+---set name resolution---
+map the vm's ip to a hostname using your registrar or dns provider
+
+
+---configure application---
+
+set docker compose
+set the .env
+wget https://raw.githubusercontent.com/firefly-iii/docker/main/database.env -O .env 
+change APP_KEY=SomeRandomStringOf32CharsExactly
+
+Change DB_PASSWORD in .env to something else. pick a better password.
+
+set the .db.env
+wget https://raw.githubusercontent.com/firefly-iii/firefly-iii/main/.env.example -O .db.env
+Change MYSQL_PASSWORD in .db.env to the SAME value
+
+create proxy net:
+docker network create proxy_net
+
+---start the application---
+
+docker compose up -d
+
+
+---add a proxy host under Proxy Hosts---
+ Default Login Email:    admin@example.com
+ Default Login Password: changeme
+
+domain name is the dns name you gave to the vm ip
+Forward Hostname / IP is the comtainer name "firefly-iii"
+port is the container port "8080"
+
+
+
+you can adjust the settings of NPM to use letsencrypt to use ssl
