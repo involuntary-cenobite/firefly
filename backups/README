@@ -1,0 +1,7 @@
+
+
+When this is run it creates a backup in ./fireflyiii-bkup
+
+you can set a cronjob to automate this if you'd like
+
+
