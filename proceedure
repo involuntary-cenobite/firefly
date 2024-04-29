@@ -1,15 +1,3 @@
-TO DO:
-
-- set cron container
-
-
-
-
-
-
-
-set firewall exemtion gcp with command center
-
 ---Configure project firewall---
 allow 80 project:
 gcloud compute firewall-rules create allow_80 --allow tcp:80 --source-tags=<list-of-your-instances-names> --source-ranges=0.0.0.0/0 --description="allow Nginx Proxy Manager http - reverse proxy"
@@ -40,7 +28,6 @@ map the vm's ip to a hostname using your registrar or dns provider
 
 
 ---configure application---
-
 set docker compose
 set the .env
 wget https://raw.githubusercontent.com/firefly-iii/docker/main/database.env -O .env 
@@ -56,7 +43,6 @@ create proxy net:
 docker network create proxy_net
 
 ---start the application---
-
 docker compose up -d
 
 
@@ -70,4 +56,4 @@ port is the container port "8080"
 
 
 
-you can adjust the settings of NPM to use letsencrypt to use ssl
+you can adjust the settings of NPM to use letsencrypt to use ssl if you wish
